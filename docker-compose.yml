@@ -1,0 +1,34 @@
+version: '3.9'
+
+networks:
+  dev:
+
+services:
+  backend:
+    build: ./Backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./Backend/.env
+    volumes:
+      - ./Backend:/app
+    restart: unless-stopped
+    networks:
+      - dev
+
+  ngrok:
+    image: ngrok/ngrok
+    container_name: ngrok
+    environment:
+      NGROK_AUTHTOKEN: 2zDxGlYkfxcagkRjltnQUsX68Mw_79Vm9Vp24wvRvF7fNSEG
+    volumes:
+      - ./ngrok.yml:/etc/ngrok/ngrok.yml
+    command:
+      - http
+      - backend:3000
+      - --url=jarvis-finikpay.ngrok.pro
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - dev
